@@ -6,47 +6,65 @@ chrome.runtime.onMessage.addListener( // this is the message listener
 		}
 	}
 );
+function isInViewPort(elem) {
+	var rect = elem.getBoundingClientRect();
+	return (
+		rect.top >= 0 &&
+		rect.left >= 0 &&
+		rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
+		rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
+	);
+}
+
+function stripContent(el) {
+	if (el != null){
+		return el.textContent.trim();
+	} else {
+		return null;
+	}
+}
+
+
+function getTagValSol(tagName) {		
+
+	var all_divs = document.getElementsByTagName('div');
+	var divs = [];
+	var lastDiv;
+
+	for (var i = 0; i < all_divs.length; i++) {
+		var div = all_divs[i];
+		var rg = new RegExp('single-\\w+-' +tagName,'g'); 
+		if (div.className.match(rg)) {
+			if (isInViewPort(div)){
+				return stripContent(div);
+			}
+			else {
+				lastDiv = div;
+			}
+		}
+	}
+	if (lastDiv != null) {
+		return stripContent(lastDiv);
+	}
+	else
+		return "...";
+
+}
+
 async function copyToTheClipboard(textToCopy){
-	tmpText = ".";
-	dokumanTarObj = document.getElementsByClassName("single-article-datetime");
-	if (dokumanTarObj.length == 0) 
-		dokumanTarObj = document.getElementsByClassName("single-column-datetime");
-	if (dokumanTarObj.length == 0) 
-		dokumanTarObj = document.getElementsByClassName("single-gelenek-datetime");
-	if (dokumanTarObj.length == 0) {
-		tmpText = "";
-	} else {
-		tmpText = dokumanTarObj[0].innerHTML;
-	}
-	tmpText = tmpText.replace(/(<time[^>]+?>|<p>|<\/p>)/img, "");
-	tmpText = tmpText.replace("</time>", "");
-	tmpText = tmpText.replace(/\s/g, '');
-
-	dokumanTarObj = document.getElementsByClassName("single-article-reporter");
-	if (dokumanTarObj.length == 0) 
-		dokumanTarObj = document.getElementsByClassName("single-column-reporter");
-	if (dokumanTarObj.length == 0) 
-		dokumanTarObj = document.getElementsByClassName("single-gelenek-reporter");
-	if (dokumanTarObj.length == 0)
-	{
-		tmpText2 = "";
-	} else {
-		tmpText2 = dokumanTarObj[0].innerHTML;
-	}
-	tmpText2 = tmpText2.replace(/(<time[^>]+?>|<p>|<\/p>)/img, "");
-	tmpText2 = tmpText2.replace(/(?:\r\n|\r|\n)/g, '');
-	tmpText2 = tmpText2.replace(/(<p[^>]+?>|<p>|<\/p>)/img, "");
-	tmpText2 = tmpText2.replace(/<a(\s[^>]*)?>.*?/img,"").replace(/<\/a>/img,"").replace(/(<p[^>]+?>|<p>|<\/p>)/img, "");
+//	tmpText = getDate();
+	var dateText = getTagValSol("datetime");
+	var reporterText2 = getTagValSol("reporter");
+	var urlText = document.URL;
+	var titleText = getTagValSol("title");
 
 
-	tmpText = "[" + tmpText+ "] - " + tmpText2 ;
+	var tagText = "[" + dateText+ "] - " + reporterText2 + " - " + titleText;
 
-	//	tmpText = tmpText.replace("\n","");
-	tagText  = tmpText + "\n" + textToCopy;
 	selText  = document.getSelection().toString();
 
-	sonText = selText + " \n" + tagText + "\n";
-//	sonText = "\"" + selText + "\"" + tagText + "\n";
+	sonText = selText + " \n" + tagText + "\n" + urlText + "\n";
+	//	sonText = "\"" + selText + "\"" + tagText + "\n";
 
 	const el = document.createElement('textarea');
 	el.value = sonText; 
