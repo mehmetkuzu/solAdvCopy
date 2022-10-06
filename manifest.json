@@ -1,0 +1,22 @@
+{
+  "name": "soL Haberden referans bilgileriyle metin kopyalamam",
+  "description": "soL Haber sitesinden tarih, yazar gibi referans bilgilerini ekleyerek metin kopyalama için kullanılır",
+  "version": "0.1.2",
+  "permissions": ["contextMenus",
+	  "clipboardWrite"],
+  "background": {
+  	"service_worker": "background.js"
+  },
+  "content_scripts": [ 
+      {
+         "matches": [
+            "https://haber.sol.org.tr/*"
+         ],
+         "js": ["content.js"]
+      }
+  ],
+  "manifest_version": 3,
+  "icons" : {
+	  "128": "/images/solAdvCopy128.png"
+  }
+}

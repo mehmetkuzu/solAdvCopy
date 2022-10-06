@@ -1,0 +1,21 @@
+{
+  "name": "Advanced Copy Text With Refgerence",
+  "description": "Copy selected text with reference information",
+  "version": "0.1.1",
+  "permissions": ["contextMenus",
+	  "tabs",
+	  "activeTab",
+	  "clipboardWrite"],
+  "background": {
+  	"service_worker": "background.js"
+  },
+  "content_scripts": [ 
+      {
+         "matches": [
+            "http://*/*", "https://*/*"
+         ],
+         "js": ["content.js"]
+      }
+  ],
+  "manifest_version": 3
+}
