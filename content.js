@@ -53,13 +53,19 @@ function getTagValSol(tagName) {
 
 async function copyToTheClipboard(textToCopy){
 //	tmpText = getDate();
+	//	
+	var sel = document.getSelection();
+
 	var dateText = getTagValSol("datetime");
 	var reporterText2 = getTagValSol("reporter");
-	var urlText = document.URL;
-	var titleText = getTagValSol("title");
+	//var urlText = document.URL;
+	var urlText = sel.baseNode.ownerDocument.URL;
+	var titleText = sel.baseNode.ownerDocument.title;
+	//var titleText = getTagValSol("title");
 
+	var tagText = "[" + dateText+ "] - " + reporterText2; // + " - " + titleText;
 
-	var tagText = "[" + dateText+ "] - " + reporterText2 + " - " + titleText;
+	//var tagText = "[" + dateText+ "] - " + reporterText2 + " - " + titleText;
 
 	selText  = document.getSelection().toString();
 

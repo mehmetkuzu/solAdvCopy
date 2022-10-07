@@ -1,7 +1,7 @@
 {
-  "name": "soL Haberden referans bilgileriyle metin kopyalamam",
-  "description": "soL Haber sitesinden tarih, yazar gibi referans bilgilerini ekleyerek metin kopyalama için kullanılır",
-  "version": "0.1.2",
+  "name": "soL Haberden referans bilgileriyle kopyalama",
+  "description": "soL'dan bilgiler ekleyerek metin kopyalama",
+  "version": "0.2.1",
   "permissions": ["contextMenus",
 	  "clipboardWrite"],
   "background": {
