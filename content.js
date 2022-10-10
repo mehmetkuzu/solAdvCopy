@@ -60,33 +60,48 @@ async function copyToTheClipboard(textToCopy){
 	var reporterText = "";
 	var titleText = "";
 
-	var sel = document.getSelection();
-	var tagVals = getTagValSol(sel, ['datetime', 'reporter', 'title']);
-	if (tagVals != null){
-		if ('datetime' in tagVals)
-			dateText = tagVals['datetime'];
-		if ('reporter' in tagVals)
-			reporterText = tagVals['reporter'];
-		if ('title' in tagVals)
-			titleText = tagVals['title'];
+	var selection = document.getSelection();
+	var hrText = '<hr style="height:1px;border-width:0;color:gray;background-color:gray">';
+	var styleText = "<style>     .div-1 { background-color: #fffbd1; margin-left: 40px; } </style>";
+	var divRenk = '<div class="div-1">';
+        var divRenk2 = '<div class="div-1">';
+
+	if (selection.rangeCount > 0) {
+		var tagVals = getTagValSol(selection, ['datetime', 'reporter', 'title']);
+		if (tagVals != null){
+			if ('datetime' in tagVals)
+				dateText = tagVals['datetime'];
+			if ('reporter' in tagVals)
+				reporterText = tagVals['reporter'];
+			if ('title' in tagVals)
+				titleText = tagVals['title'];
+		}
+
+		var urlText = selection.baseNode.ownerDocument.URL;
+
+		var tagText;
+		var ilkText = "&gt;&gt; soL'dan alıntı &gt;&gt; " ;
+
+		tagText = divRenk + '<p><a href="' + urlText + '">'+ ilkText + ' [' + dateText+ '] - ' + reporterText + '<br>' + titleText + ' </a></p>' + '</div>';
+
+		selText  = selection.toString();
+
+		sonTextAll = selText + "\n  [" + dateText + "] - " + reporterText + "\n  " + titleText + "\n  " + urlText + "\n\n";
+		sonText = divRenk + "&gt;&gt; soL'dan alıntı sonu {chrome eklentisi:" + chrome.runtime.getManifest().version + "}</div>";
+
+		range = selection.getRangeAt(0);
+		var clonedSelection = range.cloneContents();
+		var div = document.createElement('div');
+		div.appendChild(clonedSelection);
+		var contents =  [styleText, "<div>&zwnj;</div>", tagText, div.innerHTML,sonText];
+		var blob2  = new Blob(contents, { type: "text/html" });
+		
+		var richTextInput = new ClipboardItem(
+			{
+				'text/plain': new Blob([sonTextAll], {
+					type: 'text/plain',
+				}),
+				"text/html": blob2 });
+		await navigator.clipboard.write([richTextInput]);
 	}
-
-	var urlText = sel.baseNode.ownerDocument.URL;
-
-	var tagText = "  [" + dateText+ "] - " + reporterText + "\n  " + titleText;
-
-	selText  = document.getSelection().toString();
-
-	sonText = selText + " \n" + tagText + "\n " + urlText + "\n";
-	//	sonText = "\"" + selText + "\"" + tagText + "\n";
-
-	const el = document.createElement('textarea');
-	el.value = sonText; 
-	el.setAttribute('readonly', '');
-	el.style.position = 'absolute';
-	el.style.left = '-9999px';
-	document.body.appendChild(el);
-	el.select();
-	document.execCommand('copy');
-	document.body.removeChild(el);
 }

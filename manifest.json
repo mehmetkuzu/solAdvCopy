@@ -1,7 +1,7 @@
 {
   "name": "soL Haber'den referans bilgileriyle kopyalama",
   "description": "soL Haber'den tarih, mahreç gibi bilgiler ekleyerek metin kopyalama",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "permissions": ["contextMenus",
 	  "clipboardWrite"],
   "background": {
