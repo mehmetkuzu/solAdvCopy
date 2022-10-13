@@ -1,11 +1,17 @@
 chrome.runtime.onMessage.addListener( // this is the message listener
 	function(request, sender, sendResponse) {
-		if (request.message === "copyTextMK") {
-			copyToTheClipboard(request.textToCopy);
-			sendResponse();
+		if (request.doTheCopy) {
+			if (request.message === "copyTextMK") 
+			{
+				copyToTheClipboard(request.textToCopy);
+			}
+		} 
+		else {
+			document.execCommand("copy");
 		}
-	}
-);
+		sendResponse();
+	});
+
 function isInViewPort(elem) {
 	var rect = elem.getBoundingClientRect();
 	return (
@@ -24,6 +30,12 @@ function stripContent(el) {
 	}
 }
 
+function getLinkImage() {
+	var myImage = document.createElement('img');
+	iconUrl = chrome.runtime.getURL("images/fingerlink.png");
+	myImage.src = iconUrl;
+	return myImage;
+}
 
 function getTagValSol(selected, tagNames) {
 	var theArticle;
@@ -52,6 +64,13 @@ function getTagValSol(selected, tagNames) {
 	}
 	return retVals;
 }
+function isInHost(url, host) {
+	console.log("url: " + url);
+	console.log("host: "+ host);
+        var rg = new RegExp(host,'g');
+	console.log(url.match(rg));
+	return (url.match(rg) != null);
+}
 
 async function copyToTheClipboard(textToCopy){
 	//	tmpText = getDate();
@@ -61,10 +80,26 @@ async function copyToTheClipboard(textToCopy){
 	var titleText = "";
 
 	var selection = document.getSelection();
+	var urlText = selection.baseNode.ownerDocument.URL;
+
+
+	console.log('CALLURL: ' + urlText);
+	if (isInHost(urlText, 'https://haber.sol.org.tr')) {
+		console.log("ok");
+	} else {
+		document.execCommand('copy');
+		return;
+	}
+
+
+
 	var hrText = '<hr style="height:1px;border-width:0;color:gray;background-color:gray">';
-	var styleText = "<style>     .div-1 { background-color: #fffbd1; margin-left: 40px; } </style>";
+	var styleText = '<style>     ' +
+		'.div-1 { margin-left: 0px; }' +
+		'.div-2 { margin-left: 40px; }' +
+		'</style>';
 	var divRenk = '<div class="div-1">';
-        var divRenk2 = '<div class="div-1">';
+	var divRenk2 = '<div class="div-2">';
 
 	if (selection.rangeCount > 0) {
 		var tagVals = getTagValSol(selection, ['datetime', 'reporter', 'title']);
@@ -77,28 +112,35 @@ async function copyToTheClipboard(textToCopy){
 				titleText = tagVals['title'];
 		}
 
-		var urlText = selection.baseNode.ownerDocument.URL;
-
 		var tagText;
-		var ilkText = "&gt;&gt; soL'dan alıntı &gt;&gt; " ;
 
-		tagText = divRenk + '<p><a href="' + urlText + '">'+ ilkText + ' [' + dateText+ '] - ' + reporterText + '<br>' + titleText + ' </a></p>' + '</div>';
+		var text1 = divRenk + '<small><span style="color:#ad0909">☛ <a href="' + urlText + '">' + 
+			"soL'dan alıntı</span>" + ' [' + dateText+ '] - ' + reporterText +"</small><a>" +
+			"</div>";
+		var text2 = divRenk + '  <a href="' + urlText + '">' + 
+			"<small>" +titleText + "</a></small></div>";
 
-		selText  = selection.toString();
+		var sonText = divRenk + '<small><span style="color:#ad0909">▲ <a href="' + urlText + '">' + 
+			'soL\'dan alıntı sonu</a></span> {chrome eklentisi:' + chrome.runtime.getManifest().version + "}</small></div>";
 
-		sonTextAll = selText + "\n  [" + dateText + "] - " + reporterText + "\n  " + titleText + "\n  " + urlText + "\n\n";
-		sonText = divRenk + "&gt;&gt; soL'dan alıntı sonu {chrome eklentisi:" + chrome.runtime.getManifest().version + "}</div>";
+		var selText = selection.toString();
+
+		var plText  = "☛  soL'dan Alıntı ☚\n" + selText + "\n\n[" + dateText + "] - " + reporterText + "\n" + titleText + "\n" + urlText + "\n\n▲  soL'dan Alıntı Sonu ☚\n";
+
+
 
 		range = selection.getRangeAt(0);
 		var clonedSelection = range.cloneContents();
 		var div = document.createElement('div');
 		div.appendChild(clonedSelection);
-		var contents =  [styleText, "<div>&zwnj;</div>", tagText, div.innerHTML,sonText];
-		var blob2  = new Blob(contents, { type: "text/html" });
 		
+		var contents =  [styleText, "<div>&zwnj;</div>", text1, text2, divRenk2, div.innerHTML, "</div>" + sonText];	
+		
+		var blob2  = new Blob(contents, { type: "text/html" });
+
 		var richTextInput = new ClipboardItem(
 			{
-				'text/plain': new Blob([sonTextAll], {
+				'text/plain': new Blob([plText], {
 					type: 'text/plain',
 				}),
 				"text/html": blob2 });
