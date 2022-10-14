@@ -1,16 +1,24 @@
 chrome.runtime.onMessage.addListener( // this is the message listener
 	function(request, sender, sendResponse) {
-		if (request.doTheCopy) {
-			if (request.message === "copyTextMK") 
-			{
-				copyToTheClipboard(request.textToCopy);
+		console.log(document.hasFocus());
+		console.log(window.getSelection());
+		if (document.hasFocus()) {
+			if (request.doTheCopy) {
+				if (request.message === "copyTextMK") 
+				{
+					copyToTheClipboard(request.textToCopy);
+				}
+			} 
+			else {
+				document.execCommand("copy");
 			}
-		} 
-		else {
+		} else {
 			document.execCommand("copy");
 		}
+
 		sendResponse();
-	});
+	}
+);
 
 function isInViewPort(elem) {
 	var rect = elem.getBoundingClientRect();
@@ -67,7 +75,7 @@ function getTagValSol(selected, tagNames) {
 function isInHost(url, host) {
 	console.log("url: " + url);
 	console.log("host: "+ host);
-        var rg = new RegExp(host,'g');
+	var rg = new RegExp(host,'g');
 	console.log(url.match(rg));
 	return (url.match(rg) != null);
 }
@@ -133,9 +141,9 @@ async function copyToTheClipboard(textToCopy){
 		var clonedSelection = range.cloneContents();
 		var div = document.createElement('div');
 		div.appendChild(clonedSelection);
-		
+
 		var contents =  [styleText, "<div>&zwnj;</div>", text1, text2, divRenk2, div.innerHTML, "</div>" + sonText];	
-		
+
 		var blob2  = new Blob(contents, { type: "text/html" });
 
 		var richTextInput = new ClipboardItem(

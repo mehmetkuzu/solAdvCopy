@@ -13,9 +13,9 @@ chrome.commands.onCommand.addListener((command) => {
 		chrome.storage.sync.get({
 			replaceCopy: false
 		}, function(items) {
-
 			var doTheCopy = items.replaceCopy;
-			doCopyAdvanced(doTheCopy);
+			if (doTheCopy)
+				doCopyAdvanced(doTheCopy);
 		});
 	}
 });

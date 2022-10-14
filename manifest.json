@@ -1,7 +1,7 @@
 {
 	"name": "soL Haber'den referans bilgileriyle kopyalama",
 	"description": "soL Haber'den tarih, mahreç gibi bilgiler ekleyerek metin kopyalama",
-	"version": "0.4.2",
+	"version": "0.4.3",
 	"permissions": ["contextMenus",
 		"clipboardWrite",
 		"storage"],
@@ -23,7 +23,7 @@
 		},
 		"commands": {
 			"advancedCopy": {
-				"suggested_key": "Ctrl+C",
+				"suggested_key": "Ctrl+Shift+H",
 				"description": "Advanced Copy"
 			}
 		},
