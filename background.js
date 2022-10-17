@@ -44,5 +44,6 @@ chrome.contextMenus.onClicked.addListener( (clickData) => {
 	if(clickData.menuItemId == "AdvCopyMK"){
 		doCopyAdvanced(true);
 	}
+
 });
 

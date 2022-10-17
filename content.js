@@ -1,14 +1,11 @@
 chrome.runtime.onMessage.addListener( // this is the message listener
-	function(request, sender, sendResponse) {
-		console.log(document.hasFocus());
-		console.log(window.getSelection());
+	function (request, sender, sendResponse) {
 		if (document.hasFocus()) {
-			if (request.doTheCopy) {
-				if (request.message === "copyTextMK") 
-				{
+			if (request.message === "copyTextMK") {
+				if (request.doTheCopy) {
 					copyToTheClipboard(request.textToCopy);
 				}
-			} 
+			}
 			else {
 				document.execCommand("copy");
 			}
@@ -31,7 +28,7 @@ function isInViewPort(elem) {
 }
 
 function stripContent(el) {
-	if (el != null){
+	if (el != null) {
 		return el.textContent.trim();
 	} else {
 		return null;
@@ -64,7 +61,7 @@ function getTagValSol(selected, tagNames) {
 	for (tagName of tagNames) {
 		for (var i = 0; i < all_divs.length; i++) {
 			var div = all_divs[i];
-			var rg = new RegExp('single-\\w+-' +tagName,'g'); 
+			var rg = new RegExp('single-\\w+-' + tagName, 'g');
 			if (div.className.match(rg)) {
 				retVals[tagName] = stripContent(div);
 			}
@@ -74,13 +71,13 @@ function getTagValSol(selected, tagNames) {
 }
 function isInHost(url, host) {
 	console.log("url: " + url);
-	console.log("host: "+ host);
-	var rg = new RegExp(host,'g');
+	console.log("host: " + host);
+	var rg = new RegExp(host, 'g');
 	console.log(url.match(rg));
 	return (url.match(rg) != null);
 }
 
-async function copyToTheClipboard(textToCopy){
+async function copyToTheClipboard(textToCopy) {
 	//	tmpText = getDate();
 	//	
 	var dateText = "";
@@ -111,7 +108,7 @@ async function copyToTheClipboard(textToCopy){
 
 	if (selection.rangeCount > 0) {
 		var tagVals = getTagValSol(selection, ['datetime', 'reporter', 'title']);
-		if (tagVals != null){
+		if (tagVals != null) {
 			if ('datetime' in tagVals)
 				dateText = tagVals['datetime'];
 			if ('reporter' in tagVals)
@@ -122,18 +119,18 @@ async function copyToTheClipboard(textToCopy){
 
 		var tagText;
 
-		var text1 = divRenk + '<small><span style="color:#ad0909">☛ <a href="' + urlText + '">' + 
-			"soL'dan alıntı</span>" + ' [' + dateText+ '] - ' + reporterText +"</small><a>" +
+		var text1 = divRenk + '<small><span style="color:#ad0909">☛ <a href="' + urlText + '">' +
+			"soL'dan alıntı</span>" + ' [' + dateText + '] - ' + reporterText + "</small><a>" +
 			"</div>";
-		var text2 = divRenk + '  <a href="' + urlText + '">' + 
-			"<small>" +titleText + "</a></small></div>";
+		var text2 = divRenk + '  <a href="' + urlText + '">' +
+			"<small>" + titleText + "</a></small></div>";
 
-		var sonText = divRenk + '<small><span style="color:#ad0909">▲ <a href="' + urlText + '">' + 
+		var sonText = divRenk + '<small><span style="color:#ad0909">▲ <a href="' + urlText + '">' +
 			'soL\'dan alıntı sonu</a></span> {chrome eklentisi:' + chrome.runtime.getManifest().version + "}</small></div>";
 
 		var selText = selection.toString();
 
-		var plText  = "☛  soL'dan Alıntı ☚\n" + selText + "\n\n[" + dateText + "] - " + reporterText + "\n" + titleText + "\n" + urlText + "\n\n▲  soL'dan Alıntı Sonu ☚\n";
+		var plText = "☛  soL'dan Alıntı ☚\n" + selText + "\n\n[" + dateText + "] - " + reporterText + "\n" + titleText + "\n" + urlText + "\n\n▲  soL'dan Alıntı Sonu ☚\n";
 
 
 
@@ -142,16 +139,17 @@ async function copyToTheClipboard(textToCopy){
 		var div = document.createElement('div');
 		div.appendChild(clonedSelection);
 
-		var contents =  [styleText, "<div>&zwnj;</div>", text1, text2, divRenk2, div.innerHTML, "</div>" + sonText];	
+		var contents = [styleText, "<div>&zwnj;</div>", text1, text2, divRenk2, div.innerHTML, "</div>" + sonText];
 
-		var blob2  = new Blob(contents, { type: "text/html" });
+		var blob2 = new Blob(contents, { type: "text/html" });
 
 		var richTextInput = new ClipboardItem(
 			{
 				'text/plain': new Blob([plText], {
 					type: 'text/plain',
 				}),
-				"text/html": blob2 });
+				"text/html": blob2
+			});
 		await navigator.clipboard.write([richTextInput]);
 	}
 }
