@@ -126,7 +126,10 @@ async function copyToTheClipboard(textToCopy) {
 			"<small>" + titleText + "</a></small></div>";
 
 		var sonText = divRenk + '<small><span style="color:#ad0909">▲ <a href="' + urlText + '">' +
-			'soL\'dan alıntı sonu</a></span> {chrome eklentisi:' + chrome.runtime.getManifest().version + "}</small></div>";
+			'soL\'dan alıntı sonu</a>  -  </span>' +
+			'<a href="' + 
+			'https://chrome.google.com/webstore/detail/sol-haberden-referans-bil/ibokoohocaniogkmgpbkbggilpcenbem?hl=en-US">{chrome eklentisi: ' + 
+			chrome.runtime.getManifest().version + " - eklenti için aktif link}</a></small></div>";
 
 		var selText = selection.toString();
 
