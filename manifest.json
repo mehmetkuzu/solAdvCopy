@@ -14,7 +14,7 @@
 					"*://*/*",
 					"https://haber.sol.org.tr/*"
 				],
-				"js": ["content.js"]
+				"js": ["content.js","jslib/soLutils.js", "jslib/soLPortalUtils.js"]
 			}
 		],
 		"options_ui": {

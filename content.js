@@ -3,7 +3,7 @@ chrome.runtime.onMessage.addListener( // this is the message listener
 		if (document.hasFocus()) {
 			if (request.message === "copyTextMK") {
 				if (request.doTheCopy) {
-					copyToTheClipboard(request.textToCopy);
+					copyToTheClipboard();
 				}
 			}
 			else {
@@ -17,58 +17,7 @@ chrome.runtime.onMessage.addListener( // this is the message listener
 	}
 );
 
-function isInViewPort(elem) {
-	var rect = elem.getBoundingClientRect();
-	return (
-		rect.top >= 0 &&
-		rect.left >= 0 &&
-		rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
-		rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
-	);
-}
 
-function stripContent(el) {
-	if (el != null) {
-		return el.textContent.trim();
-	} else {
-		return null;
-	}
-}
-
-function getLinkImage() {
-	var myImage = document.createElement('img');
-	iconUrl = chrome.runtime.getURL("images/fingerlink.png");
-	myImage.src = iconUrl;
-	return myImage;
-}
-
-function getTagValSol(selected, tagNames) {
-	var theArticle;
-	var range = selected.getRangeAt(0);
-	var articles = document.getElementsByTagName('article');
-	var retVals = new Array();
-
-	for (art of articles) {
-		if (art.contains(range.startContainer)) {
-			theArticle = art;
-			break;
-		}
-	}
-	if (theArticle == null)
-		return null;
-
-	var all_divs = art.getElementsByTagName('div');
-	for (tagName of tagNames) {
-		for (var i = 0; i < all_divs.length; i++) {
-			var div = all_divs[i];
-			var rg = new RegExp('single-\\w+-' + tagName, 'g');
-			if (div.className.match(rg)) {
-				retVals[tagName] = stripContent(div);
-			}
-		}
-	}
-	return retVals;
-}
 function isInHost(url, host) {
 	console.log("url: " + url);
 	console.log("host: " + host);
@@ -77,7 +26,7 @@ function isInHost(url, host) {
 	return (url.match(rg) != null);
 }
 
-async function copyToTheClipboard(textToCopy) {
+async function copyToTheClipboard() {
 	//	tmpText = getDate();
 	//	
 	var dateText = "";
@@ -87,10 +36,12 @@ async function copyToTheClipboard(textToCopy) {
 	var selection = document.getSelection();
 	var urlText = selection.baseNode.ownerDocument.URL;
 
+	var inSolPortal = false;
+
 
 	console.log('CALLURL: ' + urlText);
 	if (isInHost(urlText, 'https://haber.sol.org.tr')) {
-		console.log("ok");
+		inSolPortal = true;
 	} else {
 		document.execCommand('copy');
 		return;
@@ -110,11 +61,11 @@ async function copyToTheClipboard(textToCopy) {
 		var tagVals = getTagValSol(selection, ['datetime', 'reporter', 'title']);
 		if (tagVals != null) {
 			if ('datetime' in tagVals)
-				dateText = tagVals['datetime'];
+				dateText = tagVals['datetime'][0];
 			if ('reporter' in tagVals)
-				reporterText = tagVals['reporter'];
+				reporterText = tagVals['reporter'][0];
 			if ('title' in tagVals)
-				titleText = tagVals['title'];
+				titleText = tagVals['title'][0];
 		}
 
 		var tagText;
@@ -127,8 +78,8 @@ async function copyToTheClipboard(textToCopy) {
 
 		var sonText = divRenk + '<small><span style="color:#ad0909">▲ <a href="' + urlText + '">' +
 			'soL\'dan alıntı sonu</a>  -  </span>' +
-			'<a href="' + 
-			'https://chrome.google.com/webstore/detail/sol-haberden-referans-bil/ibokoohocaniogkmgpbkbggilpcenbem?hl=en-US">{chrome eklentisi: ' + 
+			'<a href="' +
+			'https://chrome.google.com/webstore/detail/sol-haberden-referans-bil/ibokoohocaniogkmgpbkbggilpcenbem?hl=en-US">{chrome eklentisi: ' +
 			chrome.runtime.getManifest().version + " - eklenti için aktif link}</a></small></div>";
 
 		var selText = selection.toString();
@@ -143,16 +94,6 @@ async function copyToTheClipboard(textToCopy) {
 		div.appendChild(clonedSelection);
 
 		var contents = [styleText, "<div>&zwnj;</div>", text1, text2, divRenk2, div.innerHTML, "</div>" + sonText];
-
-		var blob2 = new Blob(contents, { type: "text/html" });
-
-		var richTextInput = new ClipboardItem(
-			{
-				'text/plain': new Blob([plText], {
-					type: 'text/plain',
-				}),
-				"text/html": blob2
-			});
-		await navigator.clipboard.write([richTextInput]);
+		writeToClipboard(contents, plText);
 	}
 }
