@@ -1,7 +1,7 @@
 const articleTagName = "article";
 
 function getRegExForTag(tagName) {
-    var rg = new RegExp('single-\\w+-' + tagName, 'g');
+    var rg = new RegExp('single-\\w+-' + tagName + '$', 'g');
     return rg;
 }
 

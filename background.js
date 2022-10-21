@@ -1,8 +1,8 @@
 chrome.runtime.onInstalled.addListener(function() {
 	chrome.contextMenus.create({
-		title: "soL'dan kopyala",
+		title: "Referans bilgili kopyala",
 		contexts: ["selection"],
-		documentUrlPatterns: ["https://haber.sol.org.tr/*"],
+		documentUrlPatterns: ["*://*/*"], //https://haber.sol.org.tr/*"],
 		id: "AdvCopyMK",
 
 	});
