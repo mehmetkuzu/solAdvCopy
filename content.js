@@ -102,7 +102,7 @@ async function copyToTheClipboard() {
 			titleText = document.title;
 			plText = "☛  Alıntı\n" +  titleText + "\n" + urlText  + "\n\n✑ " + selText +
 				"\n\n▲ Alıntı Sonu ▲\n";
-			text1 = divRenk + '<small><span style="color:#ad0909">☛ <a href="' + urlText + '">' +
+			text1 = divRenk + '<small><span style="color:#ad0909">☛ <a hreef="' + urlText + '">' +
 				"Alıntı: " + titleText + "</span>" + "</small><a>" +
 				"</div>";
 			text2 = divRenk + '  <a href="' + urlText + '">' +
