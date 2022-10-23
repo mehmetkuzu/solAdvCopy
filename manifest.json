@@ -1,7 +1,7 @@
 {
 	"name": "Web'de referans bilgileriyle kopyalama",
 	"description": "Tarih, mahreç ile metin kopyalama - soL Haber ile başladı ",
-	"version": "1.6.2",
+	"version": "1.7",
 	"permissions": ["contextMenus",
 		"storage"],
 		"background": {
